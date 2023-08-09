@@ -8,22 +8,34 @@ const namespaces = {
   CartItem: "reaction/cartItem",
   FulfillmentGroup: "reaction/fulfillmentGroup",
   Product: "reaction/product",
-  Shop: "reaction/shop"
+  Shop: "reaction/shop",
 };
 
 export const encodeAccountOpaqueId = encodeOpaqueId(namespaces.Account);
 export const encodeAddressOpaqueId = encodeOpaqueId(namespaces.Address);
 export const encodeCartItemOpaqueId = encodeOpaqueId(namespaces.CartItem);
 export const encodeCartOpaqueId = encodeOpaqueId(namespaces.Cart);
-export const encodeFulfillmentGroupOpaqueId = encodeOpaqueId(namespaces.FulfillmentGroup);
+export const encodeFulfillmentGroupOpaqueId = encodeOpaqueId(
+  namespaces.FulfillmentGroup
+);
 export const encodeShopOpaqueId = encodeOpaqueId(namespaces.Shop);
 
-export const decodeAccountOpaqueId = decodeOpaqueIdForNamespace(namespaces.Account);
-export const decodeAddressOpaqueId = decodeOpaqueIdForNamespace(namespaces.Address);
-export const decodeCartItemOpaqueId = decodeOpaqueIdForNamespace(namespaces.CartItem);
+export const decodeAccountOpaqueId = decodeOpaqueIdForNamespace(
+  namespaces.Account
+);
+export const decodeAddressOpaqueId = decodeOpaqueIdForNamespace(
+  namespaces.Address
+);
+export const decodeCartItemOpaqueId = decodeOpaqueIdForNamespace(
+  namespaces.CartItem
+);
 export const decodeCartOpaqueId = decodeOpaqueIdForNamespace(namespaces.Cart);
-export const decodeFulfillmentGroupOpaqueId = decodeOpaqueIdForNamespace(namespaces.FulfillmentGroup);
-export const decodeProductOpaqueId = decodeOpaqueIdForNamespace(namespaces.Product);
+export const decodeFulfillmentGroupOpaqueId = decodeOpaqueIdForNamespace(
+  namespaces.FulfillmentGroup
+);
+export const decodeProductOpaqueId = decodeOpaqueIdForNamespace(
+  namespaces.Product
+);
 export const decodeShopOpaqueId = decodeOpaqueIdForNamespace(namespaces.Shop);
 
 /**
@@ -31,11 +43,15 @@ export const decodeShopOpaqueId = decodeOpaqueIdForNamespace(namespaces.Shop);
  * @returns {Object[]} Same array with all IDs transformed to internal
  */
 export function decodeCartItemsOpaqueIds(items) {
+  // console.log("items decode ", items);
   return items.map((item) => ({
     ...item,
     productConfiguration: {
       productId: decodeProductOpaqueId(item.productConfiguration.productId),
-      productVariantId: decodeProductOpaqueId(item.productConfiguration.productVariantId)
-    }
+      productVariantId: decodeProductOpaqueId(
+        item.productConfiguration.productVariantId
+      ),
+      isDeal: item.productConfiguration.isDeal,
+    },
   }));
 }
