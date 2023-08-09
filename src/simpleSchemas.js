@@ -757,10 +757,6 @@ export const CartItem = new SimpleSchema({
   priceWhenAdded: Money,
   productId: String,
 
-  isDeal: {
-    type: Boolean,
-    optional: true,
-  },
   productSlug: {
     type: String,
     optional: true,
