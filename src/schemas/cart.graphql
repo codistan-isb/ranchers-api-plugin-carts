@@ -323,8 +323,8 @@ input ProductConfigurationInput {
 
   "The ProductVariant ID"
   productVariantId: ID!
-  
-  isDeal: Boolean!
+
+  isDeal: Boolean
 }
 
 "Input for the `addCartItems` mutation"
