@@ -3,16 +3,16 @@ import hashToken from "@reactioncommerce/api-utils/hashToken.js";
 import ReactionError from "@reactioncommerce/reaction-error";
 
 const inputSchema = new SimpleSchema({
-  "cartId": String,
-  "cartItemIds": {
+  cartId: String,
+  cartItemIds: {
     type: Array,
-    minCount: 1
+    minCount: 1,
   },
   "cartItemIds.$": String,
-  "cartToken": {
+  cartToken: {
     type: String,
-    optional: true
-  }
+    optional: true,
+  },
 });
 
 /**
@@ -38,7 +38,10 @@ export default async function removeCartItems(context, input) {
   } else if (accountId) {
     selector.accountId = accountId;
   } else {
-    throw new ReactionError("invalid-param", "A cartToken is required when updating an anonymous cart");
+    throw new ReactionError(
+      "invalid-param",
+      "A cartToken is required when updating an anonymous cart"
+    );
   }
 
   const cart = await Cart.findOne(selector);
@@ -47,9 +50,11 @@ export default async function removeCartItems(context, input) {
   const updatedCart = {
     ...cart,
     items: cart.items.filter((item) => !cartItemIds.includes(item._id)),
-    updatedAt: new Date()
+    billing: [],
+    discount: 0.0,
+    updatedAt: new Date(),
   };
-
+  console.log("updatedCart for removing cart ", updatedCart);
   const savedCart = await context.mutations.saveCart(context, updatedCart);
 
   return { cart: savedCart };
