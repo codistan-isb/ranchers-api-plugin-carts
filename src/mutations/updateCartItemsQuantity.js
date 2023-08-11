@@ -2,21 +2,21 @@ import SimpleSchema from "simpl-schema";
 import getCartById from "../util/getCartById.js";
 
 const inputSchema = new SimpleSchema({
-  "cartId": String,
-  "items": {
+  cartId: String,
+  items: {
     type: Array,
-    minCount: 1
+    minCount: 1,
   },
   "items.$": Object,
   "items.$.cartItemId": String,
   "items.$.quantity": {
     type: SimpleSchema.Integer,
-    min: 0
+    min: 0,
   },
-  "cartToken": {
+  cartToken: {
     type: String,
-    optional: true
-  }
+    optional: true,
+  },
 });
 
 /**
@@ -36,7 +36,10 @@ export default async function updateCartItemsQuantity(context, input) {
 
   const { cartId, items, cartToken } = input;
 
-  const cart = await getCartById(context, cartId, { cartToken, throwIfNotFound: true });
+  const cart = await getCartById(context, cartId, {
+    cartToken,
+    throwIfNotFound: true,
+  });
 
   const updatedItems = cart.items.reduce((list, item) => {
     const update = items.find(({ cartItemId }) => cartItemId === item._id);
@@ -50,8 +53,8 @@ export default async function updateCartItemsQuantity(context, input) {
         // Update the subtotal since it is a multiple of the price
         subtotal: {
           amount: item.price.amount * update.quantity,
-          currencyCode: item.subtotal.currencyCode
-        }
+          currencyCode: item.subtotal.currencyCode,
+        },
       });
     }
     return list;
@@ -60,7 +63,9 @@ export default async function updateCartItemsQuantity(context, input) {
   const updatedCart = {
     ...cart,
     items: updatedItems,
-    updatedAt: new Date()
+    billing: [],
+    discount: 0.0,
+    updatedAt: new Date(),
   };
 
   const savedCart = await context.mutations.saveCart(context, updatedCart);
