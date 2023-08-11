@@ -51,6 +51,7 @@ export function decodeCartItemsOpaqueIds(items) {
       productVariantId: decodeProductOpaqueId(
         item.productConfiguration.productVariantId
       ),
+      isDeal: item.productConfiguration.isDeal,
     },
   }));
 }

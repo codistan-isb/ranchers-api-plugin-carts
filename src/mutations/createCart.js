@@ -24,7 +24,7 @@ export default async function createCart(context, input) {
   const { items, shopId, shouldCreateWithoutItems = false } = input;
   const { collections, accountId = null, getFunctionsOfType } = context;
   const { Cart, Shops } = collections;
-  // console.log("items ", items);
+  console.log("items ", items);
   if (
     shouldCreateWithoutItems !== true &&
     (!Array.isArray(items) || !items.length)
@@ -77,7 +77,7 @@ export default async function createCart(context, input) {
     { projection: { currency: 1 } }
   );
   const cartCurrencyCode = (shop && shop.currency) || "USD";
-
+  console.log("updatedItemList", updatedItemList);
   const createdAt = new Date();
   const newCart = {
     _id: Random.id(),
@@ -118,7 +118,7 @@ export default async function createCart(context, input) {
   newCart.referenceId = referenceId;
   // console.log("newCart ", newCart);
   const savedCart = await context.mutations.saveCart(context, newCart);
-  // console.log("savedCart ", savedCart);
+  console.log("savedCart ", savedCart);
   return {
     cart: savedCart,
     incorrectPriceFailures,

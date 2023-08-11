@@ -805,6 +805,10 @@ export const CartItem = new SimpleSchema({
     type: String,
     optional: true,
   },
+  isDeal: {
+    type: Boolean,
+    optional: true,
+  },
 });
 
 /**
@@ -837,6 +841,10 @@ export const Cart = new SimpleSchema({
   },
   accountId: {
     type: String,
+    optional: true,
+  },
+  isDeal: {
+    type: Boolean,
     optional: true,
   },
   anonymousAccessToken: {

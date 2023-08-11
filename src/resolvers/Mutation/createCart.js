@@ -21,6 +21,7 @@ export default async function createCart(parentResult, { input }, context) {
     clientMutationId = null,
     items: itemsInput,
     shopId: opaqueShopId,
+    
   } = input;
   // console.log("id product", input);
   // console.log("itemsInput ", itemsInput);

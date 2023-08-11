@@ -8,8 +8,9 @@ export default async function xformCartItems(context, items) {
     ...item,
     productConfiguration: {
       productId: item.productId,
-      productVariantId: item.variantId
-    }
+      productVariantId: item.variantId,
+      isDeal: item.isDeal,
+    },
   }));
 
   for (const mutateItems of context.getFunctionsOfType("xformCartItems")) {

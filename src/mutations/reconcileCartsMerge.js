@@ -14,7 +14,7 @@ export default async function reconcileCartsMerge({
   accountCart,
   anonymousCart,
   anonymousCartSelector,
-  context
+  context,
 }) {
   const { collections } = context;
   const { Cart } = collections;
@@ -25,27 +25,34 @@ export default async function reconcileCartsMerge({
     price: item.price,
     productConfiguration: {
       productId: item.productId,
-      productVariantId: item.variantId
+      productVariantId: item.variantId,
+      isDeal: item.isDeal,
     },
-    quantity: item.quantity
+    quantity: item.quantity,
   }));
 
   // Merge the item lists
-  const { updatedItemList: items } = await addCartItems(context, accountCart.items, itemsInput, {
-    skipPriceCheck: true
-  });
+  const { updatedItemList: items } = await addCartItems(
+    context,
+    accountCart.items,
+    itemsInput,
+    {
+      skipPriceCheck: true,
+    }
+  );
 
   const updatedCart = {
     ...accountCart,
     items,
-    updatedAt: new Date()
+    updatedAt: new Date(),
   };
 
   const savedCart = await context.mutations.saveCart(context, updatedCart);
 
   // Delete anonymous cart
   const { deletedCount } = await Cart.deleteOne(anonymousCartSelector);
-  if (deletedCount === 0) throw new ReactionError("server-error", "Unable to delete anonymous cart");
+  if (deletedCount === 0)
+    throw new ReactionError("server-error", "Unable to delete anonymous cart");
 
   return savedCart;
 }

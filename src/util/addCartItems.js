@@ -15,6 +15,10 @@ const inputItemSchema = new SimpleSchema({
   productConfiguration: Object,
   "productConfiguration.productId": String,
   "productConfiguration.productVariantId": String,
+  "productConfiguration.isDeal": {
+    type: Boolean,
+    optional: true,
+  },
   quantity: SimpleSchema.Integer,
   price: Object,
   "price.currencyCode": String,
@@ -53,7 +57,7 @@ export default async function addCartItems(
 
   const promises = inputItems.map(async (inputItem) => {
     const { metafields, productConfiguration, quantity, price } = inputItem;
-    const { productId, productVariantId } = productConfiguration;
+    const { productId, productVariantId, isDeal } = productConfiguration;
 
     // Get the published product from the DB, in order to get variant title and check price.
     // This could be done outside of the loop to reduce db hits, but 99% of the time inputItems
@@ -66,7 +70,7 @@ export default async function addCartItems(
       context,
       productId,
       productVariantId,
-      
+      isDeal
     );
 
     const variantPriceInfo = await queries.getVariantPrice(
@@ -160,6 +164,7 @@ export default async function addCartItems(
       updatedAt: currentDateTime,
       variantId: productVariantId,
       variantTitle: chosenVariant.title,
+      isDeal: isDeal,
     };
 
     if (

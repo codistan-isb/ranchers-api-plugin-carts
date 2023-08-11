@@ -8,24 +8,32 @@ import ReactionError from "@reactioncommerce/reaction-error";
  * @returns {Object} Transformed and saved cart
  */
 export default async function saveCart(context, cart) {
-  const { appEvents, collections: { Cart }, userId = null } = context;
+  const {
+    appEvents,
+    collections: { Cart },
+    userId = null,
+  } = context;
 
   // These will mutate `cart`
   await context.mutations.removeMissingItemsFromCart(context, cart);
   await context.mutations.transformAndValidateCart(context, cart);
-
-  const { result, upsertedCount } = await Cart.replaceOne({ _id: cart._id }, cart, { upsert: true });
-  if (result.ok !== 1) throw new ReactionError("server-error", "Unable to save cart");
+  const { result, upsertedCount } = await Cart.replaceOne(
+    { _id: cart._id },
+    cart,
+    { upsert: true }
+  );
+  if (result.ok !== 1)
+    throw new ReactionError("server-error", "Unable to save cart");
 
   if (upsertedCount === 1) {
     appEvents.emit("afterCartCreate", {
       cart,
-      createdBy: userId
+      createdBy: userId,
     });
   } else {
     appEvents.emit("afterCartUpdate", {
       cart,
-      updatedBy: userId
+      updatedBy: userId,
     });
   }
 
