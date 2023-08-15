@@ -38,16 +38,17 @@ export default async function addCartItems(context, input, options = {}) {
     throw new ReactionError("not-found", "Cart not found");
   }
 
-  const {
-    incorrectPriceFailures,
-    minOrderQuantityFailures,
-    updatedItemList
-  } = await addCartItemsUtil(context, cart.items, items, { skipPriceCheck: options.skipPriceCheck });
+  const { incorrectPriceFailures, minOrderQuantityFailures, updatedItemList } =
+    await addCartItemsUtil(context, cart.items, items, {
+      skipPriceCheck: options.skipPriceCheck,
+    });
 
   const updatedCart = {
     ...cart,
     items: updatedItemList,
-    updatedAt: new Date()
+    billing: [],
+    discount: 0.0,
+    updatedAt: new Date(),
   };
 
   const savedCart = await context.mutations.saveCart(context, updatedCart);
