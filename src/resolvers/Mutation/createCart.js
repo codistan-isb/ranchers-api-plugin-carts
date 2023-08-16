@@ -23,12 +23,8 @@ export default async function createCart(parentResult, { input }, context) {
     shopId: opaqueShopId,
     
   } = input;
-  // console.log("id product", input);
-  // console.log("itemsInput ", itemsInput);
   const shopId = decodeShopOpaqueId(opaqueShopId);
   const items = decodeCartItemsOpaqueIds(itemsInput);
-  // console.log("input main ", input.items[0].productConfiguration);
-  // console.log("items main ", items);
   const { cart, incorrectPriceFailures, minOrderQuantityFailures, token } =
     await context.mutations.createCart(context, {
       items,

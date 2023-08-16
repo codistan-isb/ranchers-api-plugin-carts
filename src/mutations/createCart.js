@@ -49,14 +49,8 @@ export default async function createCart(context, input) {
       );
     }
   }
-  // console.log(
-  //   "await addCartItems(context, [], items) ",
-  //   await addCartItems(context, [], items)
-  // );
   const { incorrectPriceFailures, minOrderQuantityFailures, updatedItemList } =
     await addCartItems(context, [], items);
-  // console.log("updatedItemList", updatedItemList);
-  // console.log("shouldCreateWithoutItems", shouldCreateWithoutItems);
 
   // If all input items were invalid, don't create a cart
   if (!updatedItemList.length && shouldCreateWithoutItems !== true) {
@@ -116,9 +110,7 @@ export default async function createCart(context, input) {
   }
 
   newCart.referenceId = referenceId;
-  // console.log("newCart ", newCart);
   const savedCart = await context.mutations.saveCart(context, newCart);
-  console.log("savedCart ", savedCart);
   return {
     cart: savedCart,
     incorrectPriceFailures,

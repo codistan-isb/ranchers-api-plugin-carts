@@ -43,7 +43,6 @@ export const decodeShopOpaqueId = decodeOpaqueIdForNamespace(namespaces.Shop);
  * @returns {Object[]} Same array with all IDs transformed to internal
  */
 export function decodeCartItemsOpaqueIds(items) {
-  // console.log("items decode ", items);
   return items.map((item) => ({
     ...item,
     productConfiguration: {
