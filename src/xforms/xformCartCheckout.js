@@ -7,27 +7,29 @@ import getRateObjectForRate from "@reactioncommerce/api-utils/getRateObjectForRa
  * @returns {Object} Transformed group
  */
 function xformCartFulfillmentGroup(fulfillmentGroup, cart) {
-  const availableFulfillmentOptions = (fulfillmentGroup.shipmentQuotes || []).map((option) => ({
+  const availableFulfillmentOptions = (
+    fulfillmentGroup.shipmentQuotes || []
+  ).map((option) => ({
     fulfillmentMethod: {
       _id: option.method._id,
       carrier: option.method.carrier || null,
       displayName: option.method.label || option.method.name,
       group: option.method.group || null,
       name: option.method.name,
-      fulfillmentTypes: option.method.fulfillmentTypes
+      fulfillmentTypes: option.method.fulfillmentTypes,
     },
     handlingPrice: {
       amount: option.handlingPrice || 0,
-      currencyCode: cart.currencyCode
+      currencyCode: cart.currencyCode,
     },
     shippingPrice: {
       amount: option.shippingPrice || 0,
-      currencyCode: cart.currencyCode
+      currencyCode: cart.currencyCode,
     },
     price: {
-      amount: (option.rate + option.handlingPrice) || 0,
-      currencyCode: cart.currencyCode
-    }
+      amount: option.rate + option.handlingPrice || 0,
+      currencyCode: cart.currencyCode,
+    },
   }));
 
   let selectedFulfillmentOption = null;
@@ -36,19 +38,23 @@ function xformCartFulfillmentGroup(fulfillmentGroup, cart) {
       fulfillmentMethod: {
         _id: fulfillmentGroup.shipmentMethod._id,
         carrier: fulfillmentGroup.shipmentMethod.carrier || null,
-        displayName: fulfillmentGroup.shipmentMethod.label || fulfillmentGroup.shipmentMethod.name,
+        displayName:
+          fulfillmentGroup.shipmentMethod.label ||
+          fulfillmentGroup.shipmentMethod.name,
         group: fulfillmentGroup.shipmentMethod.group || null,
         name: fulfillmentGroup.shipmentMethod.name,
-        fulfillmentTypes: fulfillmentGroup.shipmentMethod.fulfillmentTypes
+        fulfillmentTypes: fulfillmentGroup.shipmentMethod.fulfillmentTypes,
       },
       handlingPrice: {
         amount: fulfillmentGroup.shipmentMethod.handling || 0,
-        currencyCode: cart.currencyCode
+        currencyCode: cart.currencyCode,
       },
       price: {
-        amount: (fulfillmentGroup.shipmentMethod.rate + fulfillmentGroup.shipmentMethod.handling) || 0,
-        currencyCode: cart.currencyCode
-      }
+        amount:
+          fulfillmentGroup.shipmentMethod.rate +
+            fulfillmentGroup.shipmentMethod.handling || 0,
+        currencyCode: cart.currencyCode,
+      },
     };
   }
 
@@ -56,16 +62,18 @@ function xformCartFulfillmentGroup(fulfillmentGroup, cart) {
     _id: fulfillmentGroup._id,
     availableFulfillmentOptions,
     data: {
-      shippingAddress: fulfillmentGroup.address
+      shippingAddress: fulfillmentGroup.address,
     },
     // For now, we only ever set one fulfillment group, so it has all of the items.
     // Revisit when the UI supports breaking into multiple groups.
-    items: cart.items.filter(({ _id }) => fulfillmentGroup.itemIds.includes(_id)),
+    items: cart.items.filter(({ _id }) =>
+      fulfillmentGroup.itemIds.includes(_id)
+    ),
     selectedFulfillmentOption,
     shippingAddress: fulfillmentGroup.address,
     shopId: fulfillmentGroup.shopId,
     // For now, this is always shipping. Revisit when adding download, pickup, etc. types
-    type: "shipping"
+    type: "shipping",
   };
 }
 
@@ -76,7 +84,11 @@ function xformCartFulfillmentGroup(fulfillmentGroup, cart) {
  */
 export default async function xformCartCheckout(collections, cart) {
   // itemTotal is qty * amount for each item, summed
-  const itemTotal = (cart.items || []).reduce((sum, item) => (sum + item.subtotal.amount), 0);
+  let { CartDataHistory } = collections;
+  const itemTotal = (cart.items || []).reduce(
+    (sum, item) => sum + item.subtotal.amount,
+    0
+  );
 
   // shippingTotal is shipmentMethod.rate for each item, summed
   // handlingTotal is shipmentMethod.handling for each item, summed
@@ -114,15 +126,21 @@ export default async function xformCartCheckout(collections, cart) {
   const discountTotal = cart.discount || 0;
 
   // surchargeTotal is sum of all surcharges is qty * amount for each item, summed
-  const surchargeTotal = (cart.surcharges || []).reduce((sum, surcharge) => (sum + surcharge.amount), 0);
+  const surchargeTotal = (cart.surcharges || []).reduce(
+    (sum, surcharge) => sum + surcharge.amount,
+    0
+  );
 
-  const total = Math.max(0, itemTotal + fulfillmentTotal + taxTotal + surchargeTotal - discountTotal);
+  const total = Math.max(
+    0,
+    itemTotal + fulfillmentTotal + taxTotal + surchargeTotal - discountTotal
+  );
 
   let fulfillmentTotalMoneyObject = null;
   if (fulfillmentTotal !== null) {
     fulfillmentTotalMoneyObject = {
       amount: fulfillmentTotal,
-      currencyCode: cart.currencyCode
+      currencyCode: cart.currencyCode,
     };
   }
 
@@ -131,7 +149,7 @@ export default async function xformCartCheckout(collections, cart) {
   if (taxTotal !== null) {
     taxTotalMoneyObject = {
       amount: taxTotal,
-      currencyCode: cart.currencyCode
+      currencyCode: cart.currencyCode,
     };
     if (taxSummary) {
       const effectiveTaxRate = taxSummary.tax / taxSummary.taxableAmount;
@@ -139,35 +157,66 @@ export default async function xformCartCheckout(collections, cart) {
     }
   }
 
-  fulfillmentGroups = fulfillmentGroups.map((fulfillmentGroup) => xformCartFulfillmentGroup(fulfillmentGroup, cart));
+  fulfillmentGroups = fulfillmentGroups.map((fulfillmentGroup) =>
+    xformCartFulfillmentGroup(fulfillmentGroup, cart)
+  );
   fulfillmentGroups = fulfillmentGroups.filter((group) => !!group); // filter out nulls
-
-  return {
+  var dataForCart = {
+    _id: cart._id,
     fulfillmentGroups,
     summary: {
       discountTotal: {
         amount: discountTotal,
-        currencyCode: cart.currencyCode
+        currencyCode: cart.currencyCode,
       },
       effectiveTaxRate: effectiveTaxRateObject,
       fulfillmentTotal: fulfillmentTotalMoneyObject,
       itemTotal: {
         amount: itemTotal,
-        currencyCode: cart.currencyCode
+        currencyCode: cart.currencyCode,
       },
       taxableAmount: {
         amount: taxableAmount,
-        currencyCode: cart.currencyCode
+        currencyCode: cart.currencyCode,
       },
       taxTotal: taxTotalMoneyObject,
       surchargeTotal: {
         amount: surchargeTotal,
-        currencyCode: cart.currencyCode
+        currencyCode: cart.currencyCode,
       },
       total: {
         amount: total,
-        currencyCode: cart.currencyCode
-      }
-    }
+        currencyCode: cart.currencyCode,
+      },
+    },
+  };
+  CartDataHistory.insertOne(dataForCart);
+  return {
+    fulfillmentGroups,
+    summary: {
+      discountTotal: {
+        amount: discountTotal,
+        currencyCode: cart.currencyCode,
+      },
+      effectiveTaxRate: effectiveTaxRateObject,
+      fulfillmentTotal: fulfillmentTotalMoneyObject,
+      itemTotal: {
+        amount: itemTotal,
+        currencyCode: cart.currencyCode,
+      },
+      taxableAmount: {
+        amount: taxableAmount,
+        currencyCode: cart.currencyCode,
+      },
+      taxTotal: taxTotalMoneyObject,
+      surchargeTotal: {
+        amount: surchargeTotal,
+        currencyCode: cart.currencyCode,
+      },
+      total: {
+        amount: total,
+        currencyCode: cart.currencyCode,
+      },
+    },
   };
 }
