@@ -84,7 +84,7 @@ function xformCartFulfillmentGroup(fulfillmentGroup, cart) {
  */
 export default async function xformCartCheckout(collections, cart) {
   // itemTotal is qty * amount for each item, summed
-  let { CartDataHistory } = collections;
+  // let { CartDataHistory } = collections;
   const itemTotal = (cart.items || []).reduce(
     (sum, item) => sum + item.subtotal.amount,
     0
@@ -190,7 +190,7 @@ export default async function xformCartCheckout(collections, cart) {
       },
     },
   };
-  CartDataHistory.insertOne(dataForCart);
+  // CartDataHistory.insertOne(dataForCart);
   return {
     fulfillmentGroups,
     summary: {
