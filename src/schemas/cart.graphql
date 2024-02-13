@@ -235,6 +235,8 @@ type CartItem implements Node {
 
   "The selected variant title"
   variantTitle: String
+
+  thumbnailImage: ImageSizes
 }
 
 "Supported cart reconciliation modes"

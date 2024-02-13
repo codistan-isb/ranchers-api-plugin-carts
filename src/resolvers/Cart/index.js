@@ -5,7 +5,7 @@ import xformCartItems from "../../xforms/xformCartItems.js";
 import checkout from "./checkout.js";
 import items from "./items.js";
 import totalItemQuantity from "./totalItemQuantity.js";
-
+// import cartImage from "./cartImage.js";
 export default {
   _id: (node) => encodeCartOpaqueId(node._id),
   account: resolveAccountFromAccountId,
@@ -13,5 +13,6 @@ export default {
   items,
   missingItems: (cart, _, context) => xformCartItems(context, cart.missingItems || []),
   shop: resolveShopFromShopId,
-  totalItemQuantity
+  totalItemQuantity,
+  // cartImage
 };

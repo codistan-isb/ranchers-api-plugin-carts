@@ -7,7 +7,7 @@
  */
 function ensureAbsoluteUrls(imageInfo, context) {
   const absoluteImagePaths = {};
-
+console.log("imageInfo",imageInfo);
   Object.keys(imageInfo).forEach((name) => {
     absoluteImagePaths[name] = context.getAbsoluteUrl(imageInfo[name]);
   });
@@ -24,6 +24,7 @@ function ensureAbsoluteUrls(imageInfo, context) {
  * @returns {Object} ImageSizes object
  */
 export default async function imageURLs(item, context) {
+  // console.log("item",item);
   const { Media } = context.collections;
   const { productId, variantId } = item;
   if (!Media) return {};
@@ -43,7 +44,7 @@ export default async function imageURLs(item, context) {
   const primaryImage = media[0];
 
   if (!primaryImage) return {};
-
+// console.log("media",media);
   return ensureAbsoluteUrls({
     large: `${primaryImage.url({ store: "large" })}`,
     medium: `${primaryImage.url({ store: "medium" })}`,
