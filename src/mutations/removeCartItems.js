@@ -50,8 +50,8 @@ export default async function removeCartItems(context, input) {
   const updatedCart = {
     ...cart,
     items: cart.items.filter((item) => !cartItemIds.includes(item._id)),
-    billing: [],
-    discount: 0.0,
+    // billing: [],
+    // discount: 0.0,
     updatedAt: new Date(),
   };
   console.log("updatedCart for removing cart ", updatedCart);
