@@ -25,6 +25,9 @@ const inputSchema = new SimpleSchema({
  * @param {String} input.cartToken - The cartToken if the cart is an anonymous cart
  * @returns {Promise<Object>} An object containing the updated cart in a `cart` property
  */
+
+
+
 export default async function removeCartItems(context, input) {
   inputSchema.validate(input || {});
 
@@ -51,11 +54,24 @@ export default async function removeCartItems(context, input) {
     ...cart,
     items: cart.items.filter((item) => !cartItemIds.includes(item._id)),
     // billing: [],
-    // discount: 0.0,
+    discount: 0.0,
     updatedAt: new Date(),
   };
+  
   console.log("updatedCart for removing cart ", updatedCart);
   const savedCart = await context.mutations.saveCart(context, updatedCart);
+  
+  const funcs = context.getFunctionsOfType(`discounts/${cart?.billing[0]?.processor}s/${cart?.billing[0]?.method}`); // note the added "s"
+    if (funcs.length === 0) throw new Error(`No functions of type "discounts/${processor}s/${calculation}" have been registered`);
 
-  return { cart: savedCart };
+    const amount = await funcs[0](cart._id, cart?.billing[0]?.data?.discountId, collections);
+ console.log("discount amount after removing cart items", amount);
+   const updatedCartDiscount = {
+    ...cart,
+    discount: amount,
+    updatedAt: new Date(),
+  };
+  const savedCartAfterDiscount = await context.mutations.saveCart(context, updatedCart);
+
+  return { cart: savedCartAfterDiscount };
 }
