@@ -53,25 +53,29 @@ export default async function removeCartItems(context, input) {
   const updatedCart = {
     ...cart,
     items: cart.items.filter((item) => !cartItemIds.includes(item._id)),
-    // billing: [],
+    billing: [],
     discount: 0.0,
     updatedAt: new Date(),
   };
-  
-  console.log("updatedCart for removing cart ", updatedCart);
+
   const savedCart = await context.mutations.saveCart(context, updatedCart);
-  
-  const funcs = context.getFunctionsOfType(`discounts/${cart?.billing[0]?.processor}s/${cart?.billing[0]?.method}`); // note the added "s"
-    if (funcs.length === 0) throw new Error(`No functions of type "discounts/${processor}s/${calculation}" have been registered`);
+    return { cart: savedCart }
 
-    const amount = await funcs[0](cart._id, cart?.billing[0]?.data?.discountId, collections);
- console.log("discount amount after removing cart items", amount);
-   const updatedCartDiscount = {
-    ...cart,
-    discount: amount,
-    updatedAt: new Date(),
-  };
-  const savedCartAfterDiscount = await context.mutations.saveCart(context, updatedCart);
+  // const funcs = context.getFunctionsOfType(`discounts/${cart?.billing[0]?.processor}s/${cart?.billing[0]?.method}`); // note the added "s"
+  // if (funcs.length === 0) throw new Error(`No functions of type "discounts/${processor}s/${calculation}" have been registered`);
+  // if (cart?.billing[0].length > 0) {
+  //   const amount = await funcs[0](cart._id, cart?.billing[0]?.data?.discountId, collections);
+  //   console.log("discount amount after removing cart items", amount);
+  //   const updatedCartDiscount = {
+  //     ...updatedCart,
+  //     discount: amount,
+  //     updatedAt: new Date(),
+  //   };
+  //   const savedCartAfterDiscount = await context.mutations.saveCart(context, updatedCartDiscount);
 
-  return { cart: savedCartAfterDiscount };
+  //   return { cart: savedCartAfterDiscount };
+  // }
+  // else {
+  //   return { cart: savedCart }
+  // }
 }
